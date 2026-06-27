@@ -18,12 +18,14 @@ export function Card({ children, className, title, subtitle }: CardProps) {
       {(title || subtitle) && (
         <header className="mb-4">
           {title && (
-            <h2 className="text-xl font-bold text-slate-900 sm:text-2xl">
+            <h2 className="text-lg font-bold text-slate-900 sm:text-xl lg:text-2xl">
               {title}
             </h2>
           )}
           {subtitle && (
-            <p className="mt-1 text-base text-slate-600 sm:text-lg">{subtitle}</p>
+            <p className="mt-1 text-sm leading-snug text-slate-600 sm:text-base lg:text-lg">
+              {subtitle}
+            </p>
           )}
         </header>
       )}

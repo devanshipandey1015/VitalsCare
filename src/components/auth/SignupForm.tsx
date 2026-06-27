@@ -6,6 +6,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 export function SignupForm() {
   const router = useRouter();
@@ -58,20 +59,18 @@ export function SignupForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <Input
+      <PasswordInput
         label="Password"
         name="password"
-        type="password"
         autoComplete="new-password"
         required
         hint="At least 8 characters"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Input
+      <PasswordInput
         label="Confirm Password"
         name="confirmPassword"
-        type="password"
         autoComplete="new-password"
         required
         value={confirmPassword}

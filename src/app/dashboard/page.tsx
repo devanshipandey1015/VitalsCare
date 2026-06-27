@@ -50,10 +50,10 @@ export default async function DashboardPage() {
             <LatestReadingCard reading={latest} />
 
             <section>
-              <h2 className="mb-4 text-2xl font-bold text-slate-900">
+              <h2 className="mb-3 text-xl font-bold text-slate-900 sm:mb-4 sm:text-2xl">
                 7-Day Averages
               </h2>
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
                 <StatCard
                   title="Avg Systolic"
                   value={averages.systolic ?? "—"}
