@@ -29,9 +29,9 @@ export default async function RemindersPage() {
                 How reminders work
               </p>
               <p className="mt-1 text-base text-teal-800">
-                Choose a time and enable each reminder. On mobile, add VitalsCare to your
-                home screen and allow notifications. If a push is missed, you will see an
-                in-app reminder when you open the app.
+                Choose a time and enable each reminder. Your browser will notify
+                you when it&apos;s time to log a reading. Allow notifications
+                when prompted for the best experience.
               </p>
             </div>
           </div>

@@ -9,14 +9,7 @@ import {
   mergeReminderSettings,
   saveLocalReminderSettings,
 } from "@/lib/reminders/local-storage";
-import {
-  getNotificationPermission,
-  getNotificationSupport,
-  isIosDevice,
-  isStandaloneApp,
-  requestNotificationPermission,
-  showReminderNotification,
-} from "@/lib/reminders/notifications";
+import { requestNotificationPermission } from "@/lib/reminders/notifications";
 import {
   REMINDER_LABELS,
   type ReminderType,
@@ -38,42 +31,11 @@ export function RemindersManager({
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [localOnly, setLocalOnly] = useState(!remoteAvailable);
-  const [permission, setPermission] = useState<NotificationPermission | "unsupported">("default");
-  const [support, setSupport] = useState<ReturnType<typeof getNotificationSupport>>("full");
-  const [testing, setTesting] = useState(false);
 
-  useEffect(() => {
-    setPermission(getNotificationPermission());
-    setSupport(getNotificationSupport());
-  }, []);
   useEffect(() => {
     const local = loadLocalReminderSettings();
     setSettings(mergeReminderSettings(initialSettings, local));
   }, [initialSettings]);
-
-  async function handleEnableNotifications() {
-    const result = await requestNotificationPermission();
-    setPermission(result);
-    setSupport(getNotificationSupport());
-  }
-
-  async function handleTestNotification() {
-    setTesting(true);
-    const shown = await showReminderNotification(
-      "VitalsCare test",
-      "If you see this, reminders are working on this device.",
-      "vitalscare-test"
-    );
-    if (!shown) {
-      setError(
-        "Could not show a notification. Follow the mobile setup steps below, then try again."
-      );
-    } else {
-      setNotice("Test notification sent.");
-      setError(null);
-    }
-    setTesting(false);
-  }
 
   const persist = useCallback(
     async (type: ReminderType, enabled: boolean, reminderTime: string) => {
@@ -111,11 +73,9 @@ export function RemindersManager({
 
     if (enabled) {
       const result = await requestNotificationPermission();
-      setPermission(result);
-      setSupport(getNotificationSupport());
       if (result !== "granted") {
         setError(
-          "Notifications are blocked. You will still see in-app reminders when you open VitalsCare."
+          "Browser notifications are blocked. Reminders will only show while this app is open."
         );
       }
     }
@@ -150,59 +110,6 @@ export function RemindersManager({
           {notice}
         </div>
       )}
-
-      <Card className="border-slate-200">
-        <h2 className="text-lg font-bold text-slate-900">Notification status</h2>
-        <p className="mt-2 text-base text-slate-600">
-          {permission === "granted"
-            ? "Notifications are allowed on this device."
-            : permission === "denied"
-              ? "Notifications are blocked in your browser settings."
-              : "Notifications are not enabled yet."}
-        </p>
-        {support === "in-app-only" && isIosDevice() && !isStandaloneApp() && (
-          <p className="mt-2 text-base text-amber-800">
-            On iPhone, add VitalsCare to your Home Screen first, then allow notifications.
-          </p>
-        )}
-        <div className="mt-4 flex flex-wrap gap-3">
-          {permission !== "granted" && permission !== "unsupported" && (
-            <button
-              type="button"
-              onClick={handleEnableNotifications}
-              className="rounded-xl bg-teal-700 px-4 py-3 text-base font-semibold text-white"
-            >
-              Allow notifications
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={handleTestNotification}
-            disabled={testing}
-            className="rounded-xl border-2 border-slate-200 px-4 py-3 text-base font-semibold text-slate-800 disabled:opacity-50"
-          >
-            {testing ? "Sending..." : "Send test notification"}
-          </button>
-        </div>
-      </Card>
-
-      <Card className="border-slate-200 bg-slate-50/80">
-        <h2 className="text-lg font-bold text-slate-900">Mobile setup (important)</h2>
-        <ul className="mt-3 list-disc space-y-2 pl-5 text-base text-slate-700">
-          <li>
-            <strong>iPhone:</strong> Tap Share → Add to Home Screen, open VitalsCare from
-            the icon, then enable notifications above.
-          </li>
-          <li>
-            <strong>Android:</strong> Tap the browser menu → Install app (or Add to Home
-            Screen), then allow notifications.
-          </li>
-          <li>
-            Phone browsers cannot run reminders when the app is fully closed. If you miss
-            a push notification, you will see an in-app reminder when you open VitalsCare.
-          </li>
-        </ul>
-      </Card>
 
       {(Object.keys(REMINDER_LABELS) as ReminderType[]).map((type) => {
         const config = REMINDER_LABELS[type];
