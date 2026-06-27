@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { getAuthCallbackUrl } from "@/lib/auth/site-url";
+import { formatAuthError } from "@/lib/auth/errors";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PasswordInput } from "@/components/ui/PasswordInput";
@@ -43,7 +44,7 @@ export function SignupForm() {
     });
 
     if (authError) {
-      setError(authError.message);
+      setError(formatAuthError(authError.message));
       setLoading(false);
       return;
     }
