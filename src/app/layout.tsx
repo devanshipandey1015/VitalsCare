@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: "VitalsCare — Blood Pressure & Sugar Tracker",
   description:
     "Track blood pressure and blood sugar readings over time with a simple, readable health dashboard.",
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
