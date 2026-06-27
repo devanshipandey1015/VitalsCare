@@ -173,11 +173,14 @@ vercel --prod
 
 ### Post-deployment checklist
 
-1. **Supabase Auth redirect URLs** — In Supabase Dashboard → **Authentication → URL Configuration**, add your Vercel domain(s):
-   - Site URL: `https://your-app.vercel.app`
-   - Redirect URLs: `https://your-app.vercel.app/**`
-2. **Verify RLS** — Confirm `supabase/schema.sql` was run on your Supabase project.
-3. **Test the flow** — Sign up, add a reading, check dashboard, history, and charts.
+1. **Supabase Auth redirect URLs** — In Supabase Dashboard → **Authentication → URL Configuration**:
+   - **Site URL:** `https://vitals-care.vercel.app` (not `localhost`)
+   - **Redirect URLs:** add both:
+     - `http://localhost:3000/**` (local dev)
+     - `https://vitals-care.vercel.app/**` (production)
+2. **Vercel env var** — Set `NEXT_PUBLIC_SITE_URL=https://vitals-care.vercel.app` in your Vercel project settings.
+3. **Verify RLS** — Confirm `supabase/schema.sql` was run on your Supabase project.
+4. **Test the flow** — Sign up, confirm email, add a reading, check dashboard, history, and charts.
 
 ## Scripts
 
