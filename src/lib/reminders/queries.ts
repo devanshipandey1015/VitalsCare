@@ -23,20 +23,23 @@ function defaultSettings(): ReminderSetting[] {
   }));
 }
 
-export async function getReminderSettings(): Promise<ReminderSetting[]> {
+export async function getReminderSettings(): Promise<{
+  settings: ReminderSetting[];
+  remoteAvailable: boolean;
+}> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("reminder_preferences")
     .select("*");
 
   if (error) {
-    return defaultSettings();
+    return { settings: defaultSettings(), remoteAvailable: false };
   }
 
   const saved = (data ?? []) as ReminderPreference[];
   const defaults = defaultSettings();
 
-  return defaults.map((d) => {
+  const settings = defaults.map((d) => {
     const match = saved.find((s) => s.reminder_type === d.reminder_type);
     if (!match) return d;
     return {
@@ -45,4 +48,6 @@ export async function getReminderSettings(): Promise<ReminderSetting[]> {
       reminder_time: normalizeTime(match.reminder_time),
     };
   });
+
+  return { settings, remoteAvailable: true };
 }

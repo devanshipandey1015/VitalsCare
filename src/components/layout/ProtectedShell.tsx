@@ -6,7 +6,7 @@ export async function ProtectedShell({
 }: {
   children: React.ReactNode;
 }) {
-  const reminderSettings = await getReminderSettings();
+  const { settings: reminderSettings } = await getReminderSettings();
 
   return (
     <AppShell reminderSettings={reminderSettings}>{children}</AppShell>

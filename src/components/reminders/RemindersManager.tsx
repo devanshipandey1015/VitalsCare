@@ -4,6 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import { upsertReminderSetting } from "@/lib/reminders/actions";
 import type { ReminderSetting } from "@/lib/reminders/queries";
 import {
+  isMissingTableError,
+  loadLocalReminderSettings,
+  mergeReminderSettings,
+  saveLocalReminderSettings,
+} from "@/lib/reminders/local-storage";
+import {
   REMINDER_LABELS,
   type ReminderType,
 } from "@/lib/types/reminder";
@@ -16,21 +22,25 @@ const REMINDER_MESSAGES: Record<ReminderType, string> = {
   after_meal: "Time to log your post-meal blood sugar reading.",
 };
 
-const STORAGE_KEY = "vitalscare-reminder-settings";
-
-function saveLocalSettings(settings: ReminderSetting[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-}
-
 interface RemindersManagerProps {
   initialSettings: ReminderSetting[];
+  remoteAvailable?: boolean;
 }
 
-export function RemindersManager({ initialSettings }: RemindersManagerProps) {
+export function RemindersManager({
+  initialSettings,
+  remoteAvailable = true,
+}: RemindersManagerProps) {
   const [settings, setSettings] = useState(initialSettings);
   const [saving, setSaving] = useState<ReminderType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [localOnly, setLocalOnly] = useState(!remoteAvailable);
+
+  useEffect(() => {
+    const local = loadLocalReminderSettings();
+    setSettings(mergeReminderSettings(initialSettings, local));
+  }, [initialSettings]);
 
   const persist = useCallback(
     async (type: ReminderType, enabled: boolean, reminderTime: string) => {
@@ -42,13 +52,19 @@ export function RemindersManager({ initialSettings }: RemindersManagerProps) {
         s.reminder_type === type ? { ...s, enabled, reminder_time: reminderTime } : s
       );
       setSettings(next);
-      saveLocalSettings(next);
+      saveLocalReminderSettings(next);
 
       const result = await upsertReminderSetting(type, enabled, reminderTime);
 
       if (!result.success) {
-        setError(result.error);
+        if (isMissingTableError(result.error)) {
+          setLocalOnly(true);
+          setNotice("Reminder saved on this device.");
+        } else {
+          setError(result.error);
+        }
       } else {
+        setLocalOnly(false);
         setNotice("Reminder settings saved.");
       }
 
@@ -81,6 +97,16 @@ export function RemindersManager({ initialSettings }: RemindersManagerProps) {
 
   return (
     <div className="space-y-4">
+      {localOnly && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-base text-amber-900">
+          Reminders are saved on this device only. To sync across devices, run the
+          reminder section in{" "}
+          <code className="rounded bg-amber-100 px-1.5 py-0.5 text-sm">
+            supabase/schema.sql
+          </code>{" "}
+          in your Supabase SQL Editor.
+        </div>
+      )}
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-base text-red-800">
           {error}
@@ -148,7 +174,6 @@ export function RemindersManager({ initialSettings }: RemindersManagerProps) {
           </Card>
         );
       })}
-
     </div>
   );
 }
@@ -156,11 +181,14 @@ export function RemindersManager({ initialSettings }: RemindersManagerProps) {
 export function ReminderEngine({ settings }: { settings: ReminderSetting[] }) {
   useEffect(() => {
     const interval = setInterval(() => {
+      const local = loadLocalReminderSettings();
+      const currentSettings = mergeReminderSettings(settings, local);
+
       const now = new Date();
       const today = now.toISOString().slice(0, 10);
       const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
-      for (const setting of settings) {
+      for (const setting of currentSettings) {
         if (!setting.enabled || setting.reminder_time !== currentTime) continue;
 
         const firedKey = `vitalscare-fired-${setting.reminder_type}-${today}`;

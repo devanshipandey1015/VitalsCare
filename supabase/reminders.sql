@@ -1,6 +1,5 @@
--- VitalsCare Reminder Preferences (future feature)
--- Run this when implementing push/email reminders.
--- Not required for the core app to function.
+-- Reminder preferences only (run if you already created the readings table)
+-- Supabase Dashboard → SQL Editor → New query → Run
 
 create table if not exists public.reminder_preferences (
   id uuid primary key default gen_random_uuid(),

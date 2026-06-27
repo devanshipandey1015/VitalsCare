@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function RemindersPage() {
-  const settings = await getReminderSettings();
+  const { settings, remoteAvailable } = await getReminderSettings();
 
   return (
     <ProtectedShell>
@@ -37,7 +37,10 @@ export default async function RemindersPage() {
           </div>
         </Card>
 
-        <RemindersManager initialSettings={settings} />
+        <RemindersManager
+          initialSettings={settings}
+          remoteAvailable={remoteAvailable}
+        />
       </div>
     </ProtectedShell>
   );
