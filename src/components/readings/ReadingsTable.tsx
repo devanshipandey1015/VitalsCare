@@ -1,6 +1,6 @@
 "use client";
 
-import { format } from "date-fns";
+import { formatMeasuredAt } from "@/lib/dates/measured-at";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -63,7 +63,7 @@ export function ReadingsTable({ readings }: ReadingsTableProps) {
               )}
             >
               <td className="px-4 py-4 text-base text-slate-800 sm:text-lg">
-                {format(new Date(reading.measured_at), "MMM d, yyyy h:mm a")}
+                {formatMeasuredAt(reading.measured_at)}
               </td>
               <td className="px-4 py-4 text-base font-semibold text-slate-900 sm:text-lg">
                 {reading.systolic}/{reading.diastolic}

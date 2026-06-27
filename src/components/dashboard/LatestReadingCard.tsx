@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { formatMeasuredAtLong } from "@/lib/dates/measured-at";
 import type { Reading } from "@/lib/types/reading";
 import { formatSugarType } from "@/lib/health/blood-sugar";
 import { Card } from "@/components/ui/Card";
@@ -11,10 +11,7 @@ export function LatestReadingCard({ reading }: LatestReadingCardProps) {
   return (
     <Card
       title="Latest Reading"
-      subtitle={format(
-        new Date(reading.measured_at),
-        "EEEE, MMM d, yyyy 'at' h:mm a"
-      )}
+      subtitle={formatMeasuredAtLong(reading.measured_at)}
     >
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
         <div className="rounded-xl bg-slate-50 p-4 sm:p-5">

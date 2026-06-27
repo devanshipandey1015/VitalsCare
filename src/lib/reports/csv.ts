@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { formatMeasuredAt } from "@/lib/dates/measured-at";
 import type { DoctorReport, PeriodStats } from "@/lib/types/report";
 import { formatSugarType } from "@/lib/health/blood-sugar";
 
@@ -20,7 +21,7 @@ function formatReadingLine(
   notes: string | null
 ): string {
   return [
-    escapeCsv(format(new Date(measuredAt), "yyyy-MM-dd HH:mm")),
+    escapeCsv(formatMeasuredAt(measuredAt, "yyyy-MM-dd HH:mm")),
     escapeCsv(`${systolic}/${diastolic}`),
     escapeCsv(sugar),
     escapeCsv(formatSugarType(sugarType as "fasting" | "post_meal" | "random")),
@@ -33,7 +34,7 @@ function formatBpExtreme(
   reading: PeriodStats["extremes"]["highestBp"]
 ): string {
   if (!reading) return `${label},No data`;
-  return `${label},${reading.systolic}/${reading.diastolic} mmHg on ${format(new Date(reading.measured_at), "yyyy-MM-dd HH:mm")}`;
+  return `${label},${reading.systolic}/${reading.diastolic} mmHg on ${formatMeasuredAt(reading.measured_at, "yyyy-MM-dd HH:mm")}`;
 }
 
 function formatSugarExtreme(
@@ -41,7 +42,7 @@ function formatSugarExtreme(
   reading: PeriodStats["extremes"]["highestSugar"]
 ): string {
   if (!reading) return `${label},No data`;
-  return `${label},${reading.sugar_value} mg/dL (${formatSugarType(reading.sugar_type)}) on ${format(new Date(reading.measured_at), "yyyy-MM-dd HH:mm")}`;
+  return `${label},${reading.sugar_value} mg/dL (${formatSugarType(reading.sugar_type)}) on ${formatMeasuredAt(reading.measured_at, "yyyy-MM-dd HH:mm")}`;
 }
 
 function periodSummarySection(period: PeriodStats): string[] {
@@ -63,7 +64,7 @@ function periodSummarySection(period: PeriodStats): string[] {
     lines.push("", `"${period.label} Notes"`, "Date & Time,Note");
     for (const note of period.notes) {
       lines.push(
-        `${escapeCsv(format(new Date(note.measuredAt), "yyyy-MM-dd HH:mm"))},${escapeCsv(note.text)}`
+        `${escapeCsv(formatMeasuredAt(note.measuredAt, "yyyy-MM-dd HH:mm"))},${escapeCsv(note.text)}`
       );
     }
   }

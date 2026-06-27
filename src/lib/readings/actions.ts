@@ -27,7 +27,7 @@ export async function createReading(formData: FormData) {
     diastolic: data.diastolic,
     sugar_value: data.sugar_value,
     sugar_type: data.sugar_type,
-    measured_at: new Date(data.measured_at).toISOString(),
+    measured_at: data.measured_at,
     notes: data.notes || null,
   });
 
@@ -67,7 +67,7 @@ export async function updateReading(id: string, formData: FormData) {
       diastolic: data.diastolic,
       sugar_value: data.sugar_value,
       sugar_type: data.sugar_type,
-      measured_at: new Date(data.measured_at).toISOString(),
+      measured_at: data.measured_at,
       notes: data.notes || null,
     })
     .eq("id", id);

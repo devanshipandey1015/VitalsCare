@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { formatMeasuredAt } from "@/lib/dates/measured-at";
 import type { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { DoctorReport, PeriodStats } from "@/lib/types/report";
@@ -7,12 +8,12 @@ import { formatSugarType } from "@/lib/health/blood-sugar";
 
 function formatReadingSummary(reading: Reading | null): string {
   if (!reading) return "No data";
-  return `${reading.systolic}/${reading.diastolic} mmHg on ${format(new Date(reading.measured_at), "MMM d, yyyy h:mm a")}`;
+  return `${reading.systolic}/${reading.diastolic} mmHg on ${formatMeasuredAt(reading.measured_at)}`;
 }
 
 function formatSugarSummary(reading: Reading | null): string {
   if (!reading) return "No data";
-  return `${reading.sugar_value} mg/dL (${formatSugarType(reading.sugar_type)}) on ${format(new Date(reading.measured_at), "MMM d, yyyy h:mm a")}`;
+  return `${reading.sugar_value} mg/dL (${formatSugarType(reading.sugar_type)}) on ${formatMeasuredAt(reading.measured_at)}`;
 }
 
 function getLastAutoTableY(doc: jsPDF): number {
@@ -73,7 +74,7 @@ function addPeriodSummary(
       startY: y,
       head: [["Date & Time", "Note"]],
       body: period.notes.map((n) => [
-        format(new Date(n.measuredAt), "MMM d, yyyy h:mm a"),
+        formatMeasuredAt(n.measuredAt),
         n.text,
       ]),
       theme: "striped",
@@ -94,7 +95,7 @@ function addPeriodSummary(
       startY: y,
       head: [["Date & Time", "BP", "Sugar", "Type", "Notes"]],
       body: period.readings.map((r) => [
-        format(new Date(r.measured_at), "MMM d, yyyy h:mm a"),
+        formatMeasuredAt(r.measured_at),
         `${r.systolic}/${r.diastolic}`,
         String(r.sugar_value),
         formatSugarType(r.sugar_type),

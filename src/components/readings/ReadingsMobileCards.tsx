@@ -1,6 +1,6 @@
 "use client";
 
-import { format } from "date-fns";
+import { formatMeasuredAt } from "@/lib/dates/measured-at";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -41,7 +41,7 @@ export function ReadingsMobileCards({ readings }: ReadingsListProps) {
           )}
         >
           <p className="text-base font-semibold text-slate-500">
-            {format(new Date(reading.measured_at), "MMM d, yyyy · h:mm a")}
+            {formatMeasuredAt(reading.measured_at, "MMM d, yyyy · h:mm a")}
           </p>
 
           <div className="mt-4 grid grid-cols-2 gap-4">

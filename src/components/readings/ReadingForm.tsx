@@ -3,6 +3,10 @@
 import { format } from "date-fns";
 import { useActionState } from "react";
 import { createReading, updateReading } from "@/lib/readings/actions";
+import {
+  localDatetimeToStoredIso,
+  storedIsoToLocalDatetime,
+} from "@/lib/dates/measured-at";
 import type { Reading } from "@/lib/types/reading";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -11,10 +15,6 @@ import { Textarea } from "@/components/ui/Textarea";
 
 function getDefaultDateTime(): string {
   return format(new Date(), "yyyy-MM-dd'T'HH:mm");
-}
-
-function toLocalDateTime(iso: string): string {
-  return format(new Date(iso), "yyyy-MM-dd'T'HH:mm");
 }
 
 const sugarTypeOptions = [
@@ -36,6 +36,11 @@ export function ReadingForm({ reading, mode = "create" }: ReadingFormProps) {
 
   const [state, formAction, pending] = useActionState(
     async (_prev: { errors: Record<string, string> } | null, formData: FormData) => {
+      const measuredAt = formData.get("measured_at");
+      if (typeof measuredAt === "string" && measuredAt) {
+        formData.set("measured_at", localDatetimeToStoredIso(measuredAt));
+      }
+
       const result = await action(formData);
       return result ?? null;
     },
@@ -102,7 +107,7 @@ export function ReadingForm({ reading, mode = "create" }: ReadingFormProps) {
         type="datetime-local"
         required
         defaultValue={
-          reading ? toLocalDateTime(reading.measured_at) : getDefaultDateTime()
+          reading ? storedIsoToLocalDatetime(reading.measured_at) : getDefaultDateTime()
         }
         error={errors.measured_at}
         hint="You can change this to log readings from previous days"

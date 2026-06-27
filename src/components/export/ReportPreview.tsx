@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { formatMeasuredAt } from "@/lib/dates/measured-at";
 import type { DoctorReport, PeriodStats } from "@/lib/types/report";
 import { formatSugarType } from "@/lib/health/blood-sugar";
 import { Card } from "@/components/ui/Card";
@@ -33,7 +33,7 @@ function PeriodPreview({ period }: { period: PeriodStats }) {
                 {extremes.highestBp.systolic}/{extremes.highestBp.diastolic} mmHg
               </p>
               <p className="text-base text-slate-500">
-                {format(new Date(extremes.highestBp.measured_at), "MMM d, yyyy h:mm a")}
+                {formatMeasuredAt(extremes.highestBp.measured_at)}
               </p>
             </div>
           )}
@@ -44,7 +44,7 @@ function PeriodPreview({ period }: { period: PeriodStats }) {
                 {extremes.lowestBp.systolic}/{extremes.lowestBp.diastolic} mmHg
               </p>
               <p className="text-base text-slate-500">
-                {format(new Date(extremes.lowestBp.measured_at), "MMM d, yyyy h:mm a")}
+                {formatMeasuredAt(extremes.lowestBp.measured_at)}
               </p>
             </div>
           )}

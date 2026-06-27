@@ -1,6 +1,6 @@
 "use client";
 
-import { format } from "date-fns";
+import { formatMeasuredAtChartDay } from "@/lib/dates/measured-at";
 import {
   CartesianGrid,
   Legend,
@@ -25,7 +25,7 @@ export function BloodPressureChart({ readings }: BloodPressureChartProps) {
         new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime()
     )
     .map((reading) => ({
-      date: format(new Date(reading.measured_at), "MMM d"),
+      date: formatMeasuredAtChartDay(reading.measured_at),
       systolic: reading.systolic,
       diastolic: reading.diastolic,
     }));
