@@ -13,7 +13,7 @@ export default function NewReadingPage() {
       <div className="mx-auto max-w-2xl space-y-6 sm:space-y-8">
         <PageHeader
           title="Add a Reading"
-          description="Record your blood pressure and blood sugar. Date and time default to now, but you can change them for past readings."
+          description="Record your blood pressure (required). Blood sugar and weight are optional. Date and time default to now, but you can change them for past readings."
         />
 
         <Card>

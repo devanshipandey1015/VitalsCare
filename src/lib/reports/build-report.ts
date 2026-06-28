@@ -14,8 +14,13 @@ function computeExtremes(readings: Reading[]): ReadingExtremes {
       lowestBp: null,
       highestSugar: null,
       lowestSugar: null,
+      highestWeight: null,
+      lowestWeight: null,
     };
   }
+
+  const withSugar = readings.filter((r) => r.sugar_value != null);
+  const withWeight = readings.filter((r) => r.weight_kg != null);
 
   return {
     highestBp: readings.reduce((max, r) =>
@@ -24,12 +29,30 @@ function computeExtremes(readings: Reading[]): ReadingExtremes {
     lowestBp: readings.reduce((min, r) =>
       r.systolic < min.systolic ? r : min
     ),
-    highestSugar: readings.reduce((max, r) =>
-      r.sugar_value > max.sugar_value ? r : max
-    ),
-    lowestSugar: readings.reduce((min, r) =>
-      r.sugar_value < min.sugar_value ? r : min
-    ),
+    highestSugar:
+      withSugar.length > 0
+        ? withSugar.reduce((max, r) =>
+            r.sugar_value! > max.sugar_value! ? r : max
+          )
+        : null,
+    lowestSugar:
+      withSugar.length > 0
+        ? withSugar.reduce((min, r) =>
+            r.sugar_value! < min.sugar_value! ? r : min
+          )
+        : null,
+    highestWeight:
+      withWeight.length > 0
+        ? withWeight.reduce((max, r) =>
+            r.weight_kg! > max.weight_kg! ? r : max
+          )
+        : null,
+    lowestWeight:
+      withWeight.length > 0
+        ? withWeight.reduce((min, r) =>
+            r.weight_kg! < min.weight_kg! ? r : min
+          )
+        : null,
   };
 }
 
@@ -48,6 +71,7 @@ function computePeriodStats(
       avgSystolic: null,
       avgDiastolic: null,
       avgSugar: null,
+      avgWeight: null,
       extremes: computeExtremes([]),
       notes: [],
       readings: [],
@@ -58,9 +82,12 @@ function computePeriodStats(
     (acc, r) => ({
       systolic: acc.systolic + r.systolic,
       diastolic: acc.diastolic + r.diastolic,
-      sugar: acc.sugar + r.sugar_value,
+      sugar: acc.sugar + (r.sugar_value ?? 0),
+      sugarCount: acc.sugarCount + (r.sugar_value != null ? 1 : 0),
+      weight: acc.weight + (r.weight_kg ?? 0),
+      weightCount: acc.weightCount + (r.weight_kg != null ? 1 : 0),
     }),
-    { systolic: 0, diastolic: 0, sugar: 0 }
+    { systolic: 0, diastolic: 0, sugar: 0, sugarCount: 0, weight: 0, weightCount: 0 }
   );
 
   const count = periodReadings.length;
@@ -71,7 +98,14 @@ function computePeriodStats(
     count,
     avgSystolic: Math.round(totals.systolic / count),
     avgDiastolic: Math.round(totals.diastolic / count),
-    avgSugar: Math.round(totals.sugar / count),
+    avgSugar:
+      totals.sugarCount > 0
+        ? Math.round(totals.sugar / totals.sugarCount)
+        : null,
+    avgWeight:
+      totals.weightCount > 0
+        ? Math.round((totals.weight / totals.weightCount) * 10) / 10
+        : null,
     extremes: computeExtremes(periodReadings),
     notes: periodReadings
       .filter((r) => r.notes?.trim())

@@ -25,8 +25,9 @@ export async function createReading(formData: FormData) {
     user_id: user.id,
     systolic: data.systolic,
     diastolic: data.diastolic,
-    sugar_value: data.sugar_value,
-    sugar_type: data.sugar_type,
+    sugar_value: data.sugar_value ?? null,
+    sugar_type: data.sugar_type ?? null,
+    weight_kg: data.weight_kg ?? null,
     measured_at: data.measured_at,
     notes: data.notes || null,
   });
@@ -65,8 +66,9 @@ export async function updateReading(id: string, formData: FormData) {
     .update({
       systolic: data.systolic,
       diastolic: data.diastolic,
-      sugar_value: data.sugar_value,
-      sugar_type: data.sugar_type,
+      sugar_value: data.sugar_value ?? null,
+      sugar_type: data.sugar_type ?? null,
+      weight_kg: data.weight_kg ?? null,
       measured_at: data.measured_at,
       notes: data.notes || null,
     })

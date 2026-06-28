@@ -41,7 +41,7 @@ export function ReadingsTable({ readings }: ReadingsTableProps) {
       <table className="min-w-full text-left">
         <thead className="bg-slate-50">
           <tr>
-            {["Date & Time", "BP", "Sugar", "Type", "Notes", "Actions"].map(
+            {["Date & Time", "BP", "Sugar", "Type", "Weight", "Notes", "Actions"].map(
               (header) => (
                 <th
                   key={header}
@@ -69,10 +69,13 @@ export function ReadingsTable({ readings }: ReadingsTableProps) {
                 {reading.systolic}/{reading.diastolic}
               </td>
               <td className="px-4 py-4 text-base font-semibold text-slate-900 sm:text-lg">
-                {reading.sugar_value}
+                {reading.sugar_value ?? "—"}
               </td>
               <td className="px-4 py-4 text-base text-slate-700 sm:text-lg">
                 {formatSugarType(reading.sugar_type)}
+              </td>
+              <td className="px-4 py-4 text-base font-semibold text-slate-900 sm:text-lg">
+                {reading.weight_kg != null ? `${reading.weight_kg} kg` : "—"}
               </td>
               <td className="max-w-[200px] truncate px-4 py-4 text-base text-slate-600">
                 {reading.notes || "—"}

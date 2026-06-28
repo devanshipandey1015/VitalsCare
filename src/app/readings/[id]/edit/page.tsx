@@ -26,7 +26,7 @@ export default async function EditReadingPage({ params }: EditReadingPageProps) 
       <div className="mx-auto max-w-2xl space-y-6 sm:space-y-8">
         <PageHeader
           title="Edit Reading"
-          description="Update your blood pressure and blood sugar reading"
+          description="Update your reading. Only blood pressure is required; sugar and weight are optional."
         />
 
         <Card>

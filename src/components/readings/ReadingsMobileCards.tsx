@@ -44,7 +44,7 @@ export function ReadingsMobileCards({ readings }: ReadingsListProps) {
             {formatMeasuredAt(reading.measured_at, "MMM d, yyyy · h:mm a")}
           </p>
 
-          <div className="mt-4 grid grid-cols-2 gap-4">
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
             <div className="rounded-xl bg-slate-50 p-3">
               <p className="text-sm font-semibold text-slate-600">Blood Pressure</p>
               <p className="mt-1 text-2xl font-bold text-slate-900">
@@ -54,10 +54,21 @@ export function ReadingsMobileCards({ readings }: ReadingsListProps) {
             <div className="rounded-xl bg-slate-50 p-3">
               <p className="text-sm font-semibold text-slate-600">Blood Sugar</p>
               <p className="mt-1 text-2xl font-bold text-slate-900">
-                {reading.sugar_value}
+                {reading.sugar_value ?? "—"}
               </p>
               <p className="text-sm text-slate-500">
-                {formatSugarType(reading.sugar_type)}
+                {reading.sugar_value != null
+                  ? formatSugarType(reading.sugar_type)
+                  : "Not recorded"}
+              </p>
+            </div>
+            <div className="rounded-xl bg-slate-50 p-3">
+              <p className="text-sm font-semibold text-slate-600">Weight</p>
+              <p className="mt-1 text-2xl font-bold text-slate-900">
+                {reading.weight_kg != null ? reading.weight_kg : "—"}
+              </p>
+              <p className="text-sm text-slate-500">
+                {reading.weight_kg != null ? "kg" : "Not recorded"}
               </p>
             </div>
           </div>

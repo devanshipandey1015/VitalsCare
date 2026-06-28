@@ -5,8 +5,9 @@ export interface Reading {
   user_id: string;
   systolic: number;
   diastolic: number;
-  sugar_value: number;
-  sugar_type: SugarType;
+  sugar_value: number | null;
+  sugar_type: SugarType | null;
+  weight_kg: number | null;
   measured_at: string;
   notes: string | null;
   created_at: string;
@@ -15,8 +16,9 @@ export interface Reading {
 export interface ReadingFormData {
   systolic: number;
   diastolic: number;
-  sugar_value: number;
-  sugar_type: SugarType;
+  sugar_value?: number;
+  sugar_type?: SugarType;
+  weight_kg?: number;
   measured_at: string;
   notes?: string;
 }

@@ -7,8 +7,9 @@ create table if not exists public.readings (
   user_id uuid not null references auth.users (id) on delete cascade,
   systolic integer not null check (systolic between 70 and 250),
   diastolic integer not null check (diastolic between 40 and 150),
-  sugar_value integer not null check (sugar_value between 30 and 600),
-  sugar_type text not null check (sugar_type in ('fasting', 'post_meal', 'random')),
+  sugar_value integer check (sugar_value is null or sugar_value between 30 and 600),
+  sugar_type text check (sugar_type is null or sugar_type in ('fasting', 'post_meal', 'random')),
+  weight_kg numeric(5,1) check (weight_kg is null or weight_kg between 20 and 500),
   measured_at timestamptz not null,
   notes text,
   created_at timestamptz not null default now()

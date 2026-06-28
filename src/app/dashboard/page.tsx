@@ -38,7 +38,7 @@ export default async function DashboardPage() {
         {!latest ? (
           <EmptyState
             title="No readings yet"
-            description="Start by adding your first blood pressure and blood sugar reading."
+            description="Start by adding your first blood pressure reading. You can optionally include blood sugar and weight too."
             action={
               <Link href="/readings/new">
                 <Button size="lg">Add Your First Reading</Button>
@@ -53,7 +53,7 @@ export default async function DashboardPage() {
               <h2 className="mb-3 text-xl font-bold text-slate-900 sm:mb-4 sm:text-2xl">
                 7-Day Averages
               </h2>
-              <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-4">
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-5">
                 <StatCard
                   title="Avg Systolic"
                   value={averages.systolic ?? "—"}
@@ -73,6 +73,11 @@ export default async function DashboardPage() {
                   title="Avg Blood Sugar"
                   value={averages.sugar ?? "—"}
                   unit={averages.sugar ? "mg/dL" : undefined}
+                />
+                <StatCard
+                  title="Avg Weight"
+                  value={averages.weight ?? "—"}
+                  unit={averages.weight ? "kg" : undefined}
                 />
                 <StatCard
                   title="Total Readings"

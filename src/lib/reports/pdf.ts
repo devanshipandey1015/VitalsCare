@@ -12,8 +12,13 @@ function formatReadingSummary(reading: Reading | null): string {
 }
 
 function formatSugarSummary(reading: Reading | null): string {
-  if (!reading) return "No data";
+  if (!reading || reading.sugar_value == null) return "No data";
   return `${reading.sugar_value} mg/dL (${formatSugarType(reading.sugar_type)}) on ${formatMeasuredAt(reading.measured_at)}`;
+}
+
+function formatWeightSummary(reading: Reading | null): string {
+  if (!reading || reading.weight_kg == null) return "No data";
+  return `${reading.weight_kg} kg on ${formatMeasuredAt(reading.measured_at)}`;
 }
 
 function getLastAutoTableY(doc: jsPDF): number {
@@ -48,6 +53,10 @@ function addPeriodSummary(
         "Average Blood Sugar",
         period.avgSugar ? `${period.avgSugar} mg/dL` : "N/A",
       ],
+      [
+        "Average Weight",
+        period.avgWeight ? `${period.avgWeight} kg` : "N/A",
+      ],
       ["Highest BP Reading", formatReadingSummary(period.extremes.highestBp)],
       ["Lowest BP Reading", formatReadingSummary(period.extremes.lowestBp)],
       [
@@ -55,6 +64,14 @@ function addPeriodSummary(
         formatSugarSummary(period.extremes.highestSugar),
       ],
       ["Lowest Sugar Reading", formatSugarSummary(period.extremes.lowestSugar)],
+      [
+        "Highest Weight Reading",
+        formatWeightSummary(period.extremes.highestWeight),
+      ],
+      [
+        "Lowest Weight Reading",
+        formatWeightSummary(period.extremes.lowestWeight),
+      ],
     ],
     theme: "grid",
     headStyles: { fillColor: [15, 118, 110], fontSize: 11 },
@@ -93,19 +110,20 @@ function addPeriodSummary(
 
     autoTable(doc, {
       startY: y,
-      head: [["Date & Time", "BP", "Sugar", "Type", "Notes"]],
+      head: [["Date & Time", "BP", "Sugar", "Type", "Weight", "Notes"]],
       body: period.readings.map((r) => [
         formatMeasuredAt(r.measured_at),
         `${r.systolic}/${r.diastolic}`,
-        String(r.sugar_value),
+        r.sugar_value != null ? String(r.sugar_value) : "—",
         formatSugarType(r.sugar_type),
+        r.weight_kg != null ? `${r.weight_kg} kg` : "—",
         r.notes ?? "—",
       ]),
       theme: "striped",
       headStyles: { fillColor: [100, 116, 139], fontSize: 9 },
       bodyStyles: { fontSize: 8 },
       margin: { left: 14, right: 14 },
-      columnStyles: { 4: { cellWidth: 50 } },
+      columnStyles: { 5: { cellWidth: 50 } },
     });
 
     y = getLastAutoTableY(doc) + 14;

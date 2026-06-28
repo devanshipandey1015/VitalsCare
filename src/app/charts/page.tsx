@@ -3,6 +3,7 @@ import { ProtectedShell } from "@/components/layout/ProtectedShell";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { BloodPressureChart } from "@/components/charts/BloodPressureChart";
 import { BloodSugarChart } from "@/components/charts/BloodSugarChart";
+import { WeightChart } from "@/components/charts/WeightChart";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { getReadings } from "@/lib/readings/queries";
@@ -19,7 +20,7 @@ export default async function ChartsPage() {
       <div className="space-y-6 sm:space-y-8">
         <PageHeader
           title="Health Trends"
-          description="Visual charts of your blood pressure and blood sugar over time"
+          description="Visual charts of your blood pressure, blood sugar, and weight over time"
         />
 
         {readings.length === 0 ? (
@@ -36,6 +37,7 @@ export default async function ChartsPage() {
           <div className="space-y-8">
             <BloodPressureChart readings={readings} />
             <BloodSugarChart readings={readings} />
+            <WeightChart readings={readings} />
           </div>
         )}
 

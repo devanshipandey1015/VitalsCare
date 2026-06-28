@@ -18,6 +18,7 @@ function getDefaultDateTime(): string {
 }
 
 const sugarTypeOptions = [
+  { value: "", label: "—" },
   { value: "fasting", label: "Fasting" },
   { value: "post_meal", label: "Post-Meal" },
   { value: "random", label: "Random" },
@@ -86,20 +87,31 @@ export function ReadingForm({ reading, mode = "create" }: ReadingFormProps) {
           inputMode="numeric"
           min={30}
           max={600}
-          required
           defaultValue={reading?.sugar_value ?? ""}
           error={errors.sugar_value}
-          hint="Normal range: 30–600 mg/dL"
+          hint="Optional — normal range: 30–600 mg/dL"
         />
         <Select
           label="Blood Sugar Type"
           name="sugar_type"
-          required
-          defaultValue={reading?.sugar_type ?? "fasting"}
+          defaultValue={reading?.sugar_type ?? ""}
           options={sugarTypeOptions}
           error={errors.sugar_type}
         />
       </div>
+
+      <Input
+        label="Weight (kg)"
+        name="weight_kg"
+        type="number"
+        inputMode="decimal"
+        min={20}
+        max={500}
+        step={0.1}
+        defaultValue={reading?.weight_kg ?? ""}
+        error={errors.weight_kg}
+        hint="Optional — typical range: 20–500 kg"
+      />
 
       <Input
         label="Date & Time"

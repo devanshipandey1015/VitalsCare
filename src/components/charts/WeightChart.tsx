@@ -12,24 +12,22 @@ import {
   YAxis,
 } from "recharts";
 import type { Reading } from "@/lib/types/reading";
-import { formatSugarType } from "@/lib/health/blood-sugar";
 import { Card } from "@/components/ui/Card";
 
-interface BloodSugarChartProps {
+interface WeightChartProps {
   readings: Reading[];
 }
 
-export function BloodSugarChart({ readings }: BloodSugarChartProps) {
+export function WeightChart({ readings }: WeightChartProps) {
   const chartData = [...readings]
-    .filter((reading) => reading.sugar_value != null)
+    .filter((reading) => reading.weight_kg != null)
     .sort(
       (a, b) =>
         new Date(a.measured_at).getTime() - new Date(b.measured_at).getTime()
     )
     .map((reading) => ({
       date: formatMeasuredAtChartDay(reading.measured_at),
-      sugar: reading.sugar_value!,
-      type: formatSugarType(reading.sugar_type),
+      weight: reading.weight_kg,
     }));
 
   if (chartData.length === 0) {
@@ -37,7 +35,7 @@ export function BloodSugarChart({ readings }: BloodSugarChartProps) {
   }
 
   return (
-    <Card title="Blood Sugar Over Time">
+    <Card title="Weight Over Time">
       <div className="h-72 w-full sm:h-96">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -49,9 +47,9 @@ export function BloodSugarChart({ readings }: BloodSugarChartProps) {
             />
             <YAxis
               tick={{ fontSize: 14, fill: "#475569" }}
-              domain={[0, "auto"]}
+              domain={["auto", "auto"]}
               label={{
-                value: "mg/dL",
+                value: "kg",
                 angle: -90,
                 position: "insideLeft",
                 style: { fontSize: 14, fill: "#64748b" },
@@ -63,17 +61,14 @@ export function BloodSugarChart({ readings }: BloodSugarChartProps) {
                 borderRadius: 12,
                 border: "1px solid #e2e8f0",
               }}
-              formatter={(value, _name, props) => {
-                const payload = props.payload as { type?: string };
-                return [`${value} mg/dL (${payload.type ?? ""})`, "Blood Sugar"];
-              }}
+              formatter={(value) => [`${value} kg`, "Weight"]}
             />
             <Legend wrapperStyle={{ fontSize: 16, paddingTop: 16 }} />
             <Line
               type="monotone"
-              dataKey="sugar"
-              name="Blood Sugar"
-              stroke="#b45309"
+              dataKey="weight"
+              name="Weight"
+              stroke="#7c3aed"
               strokeWidth={3}
               dot={{ r: 4 }}
               activeDot={{ r: 6 }}

@@ -5,6 +5,8 @@ export interface ReadingExtremes {
   lowestBp: Reading | null;
   highestSugar: Reading | null;
   lowestSugar: Reading | null;
+  highestWeight: Reading | null;
+  lowestWeight: Reading | null;
 }
 
 export interface PeriodStats {
@@ -14,6 +16,7 @@ export interface PeriodStats {
   avgSystolic: number | null;
   avgDiastolic: number | null;
   avgSugar: number | null;
+  avgWeight: number | null;
   extremes: ReadingExtremes;
   notes: Array<{ measuredAt: string; text: string }>;
   readings: Reading[];

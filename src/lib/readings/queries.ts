@@ -47,16 +47,19 @@ export function calculateAverages(readings: Reading[]) {
   );
 
   if (last7Days.length === 0) {
-    return { systolic: null, diastolic: null, sugar: null, count: 0 };
+    return { systolic: null, diastolic: null, sugar: null, weight: null, count: 0 };
   }
 
   const totals = last7Days.reduce(
     (acc, reading) => ({
       systolic: acc.systolic + reading.systolic,
       diastolic: acc.diastolic + reading.diastolic,
-      sugar: acc.sugar + reading.sugar_value,
+      sugar: acc.sugar + (reading.sugar_value ?? 0),
+      sugarCount: acc.sugarCount + (reading.sugar_value != null ? 1 : 0),
+      weight: acc.weight + (reading.weight_kg ?? 0),
+      weightCount: acc.weightCount + (reading.weight_kg != null ? 1 : 0),
     }),
-    { systolic: 0, diastolic: 0, sugar: 0 }
+    { systolic: 0, diastolic: 0, sugar: 0, sugarCount: 0, weight: 0, weightCount: 0 }
   );
 
   const count = last7Days.length;
@@ -64,7 +67,14 @@ export function calculateAverages(readings: Reading[]) {
   return {
     systolic: Math.round(totals.systolic / count),
     diastolic: Math.round(totals.diastolic / count),
-    sugar: Math.round(totals.sugar / count),
+    sugar:
+      totals.sugarCount > 0
+        ? Math.round(totals.sugar / totals.sugarCount)
+        : null,
+    weight:
+      totals.weightCount > 0
+        ? Math.round((totals.weight / totals.weightCount) * 10) / 10
+        : null,
     count,
   };
 }

@@ -22,10 +22,21 @@ function PeriodPreview({ period }: { period: PeriodStats }) {
           <div>
             <p className="text-base font-semibold text-slate-600">Average Sugar</p>
             <p className="text-2xl font-bold text-slate-900">
-              {period.avgSugar}{" "}
-              <span className="text-lg font-normal text-slate-500">mg/dL</span>
+              {period.avgSugar ?? "—"}{" "}
+              {period.avgSugar != null && (
+                <span className="text-lg font-normal text-slate-500">mg/dL</span>
+              )}
             </p>
           </div>
+          {period.avgWeight != null && (
+            <div>
+              <p className="text-base font-semibold text-slate-600">Average Weight</p>
+              <p className="text-2xl font-bold text-slate-900">
+                {period.avgWeight}{" "}
+                <span className="text-lg font-normal text-slate-500">kg</span>
+              </p>
+            </div>
+          )}
           {extremes.highestBp && (
             <div>
               <p className="text-base font-semibold text-slate-600">Highest BP</p>
@@ -48,7 +59,7 @@ function PeriodPreview({ period }: { period: PeriodStats }) {
               </p>
             </div>
           )}
-          {extremes.highestSugar && (
+          {extremes.highestSugar && extremes.highestSugar.sugar_value != null && (
             <div>
               <p className="text-base font-semibold text-slate-600">Highest Sugar</p>
               <p className="text-lg text-slate-800">
@@ -57,12 +68,28 @@ function PeriodPreview({ period }: { period: PeriodStats }) {
               </p>
             </div>
           )}
-          {extremes.lowestSugar && (
+          {extremes.lowestSugar && extremes.lowestSugar.sugar_value != null && (
             <div>
               <p className="text-base font-semibold text-slate-600">Lowest Sugar</p>
               <p className="text-lg text-slate-800">
                 {extremes.lowestSugar.sugar_value} mg/dL (
                 {formatSugarType(extremes.lowestSugar.sugar_type)})
+              </p>
+            </div>
+          )}
+          {extremes.highestWeight && extremes.highestWeight.weight_kg != null && (
+            <div>
+              <p className="text-base font-semibold text-slate-600">Highest Weight</p>
+              <p className="text-lg text-slate-800">
+                {extremes.highestWeight.weight_kg} kg
+              </p>
+            </div>
+          )}
+          {extremes.lowestWeight && extremes.lowestWeight.weight_kg != null && (
+            <div>
+              <p className="text-base font-semibold text-slate-600">Lowest Weight</p>
+              <p className="text-lg text-slate-800">
+                {extremes.lowestWeight.weight_kg} kg
               </p>
             </div>
           )}

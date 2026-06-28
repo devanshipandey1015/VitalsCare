@@ -80,7 +80,8 @@ export function isBloodSugarAbnormal(
   return status.level !== "success";
 }
 
-export function formatSugarType(type: SugarType): string {
+export function formatSugarType(type: SugarType | null): string {
+  if (!type) return "—";
   const labels: Record<SugarType, string> = {
     fasting: "Fasting",
     post_meal: "Post-Meal",

@@ -13,7 +13,7 @@ export function LatestReadingCard({ reading }: LatestReadingCardProps) {
       title="Latest Reading"
       subtitle={formatMeasuredAtLong(reading.measured_at)}
     >
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
         <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
           <p className="text-base font-semibold text-slate-700 sm:text-lg">
             Blood Pressure
@@ -29,13 +29,27 @@ export function LatestReadingCard({ reading }: LatestReadingCardProps) {
             Blood Sugar
           </p>
           <p className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
-            {reading.sugar_value}
+            {reading.sugar_value ?? "—"}
           </p>
           <p className="mt-1 text-base text-slate-600 sm:text-lg">
-            mg/dL
+            {reading.sugar_value != null ? "mg/dL" : "Not recorded"}
           </p>
-          <p className="text-sm text-slate-500 sm:text-base">
-            {formatSugarType(reading.sugar_type)}
+          {reading.sugar_value != null && (
+            <p className="text-sm text-slate-500 sm:text-base">
+              {formatSugarType(reading.sugar_type)}
+            </p>
+          )}
+        </div>
+
+        <div className="rounded-xl bg-slate-50 p-4 sm:p-5">
+          <p className="text-base font-semibold text-slate-700 sm:text-lg">
+            Weight
+          </p>
+          <p className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl lg:text-5xl">
+            {reading.weight_kg ?? "—"}
+          </p>
+          <p className="mt-1 text-base text-slate-600 sm:text-lg">
+            {reading.weight_kg != null ? "kg" : "Not recorded"}
           </p>
         </div>
       </div>
