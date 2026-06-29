@@ -4,6 +4,23 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { parseReadingFormData } from "@/lib/validations/reading";
+import {
+  isMissingWeightKgColumn,
+  weightFieldsForInsert,
+} from "@/lib/readings/weight";
+import type { ReadingSchema } from "@/lib/validations/reading";
+
+function buildReadingPayload(data: ReadingSchema, useLegacyLbsColumn: boolean) {
+  return {
+    systolic: data.systolic,
+    diastolic: data.diastolic,
+    sugar_value: data.sugar_value ?? null,
+    sugar_type: data.sugar_type ?? null,
+    ...weightFieldsForInsert(data.weight_kg, useLegacyLbsColumn),
+    measured_at: data.measured_at,
+    notes: data.notes || null,
+  };
+}
 
 export async function createReading(formData: FormData) {
   const { data, errors } = parseReadingFormData(formData);
@@ -21,16 +38,13 @@ export async function createReading(formData: FormData) {
     redirect("/login");
   }
 
-  const { error } = await supabase.from("readings").insert({
-    user_id: user.id,
-    systolic: data.systolic,
-    diastolic: data.diastolic,
-    sugar_value: data.sugar_value ?? null,
-    sugar_type: data.sugar_type ?? null,
-    weight_kg: data.weight_kg ?? null,
-    measured_at: data.measured_at,
-    notes: data.notes || null,
-  });
+  let payload = { user_id: user.id, ...buildReadingPayload(data, false) };
+  let { error } = await supabase.from("readings").insert(payload);
+
+  if (isMissingWeightKgColumn(error)) {
+    payload = { user_id: user.id, ...buildReadingPayload(data, true) };
+    ({ error } = await supabase.from("readings").insert(payload));
+  }
 
   if (error) {
     return {
@@ -61,18 +75,13 @@ export async function updateReading(id: string, formData: FormData) {
     redirect("/login");
   }
 
-  const { error } = await supabase
-    .from("readings")
-    .update({
-      systolic: data.systolic,
-      diastolic: data.diastolic,
-      sugar_value: data.sugar_value ?? null,
-      sugar_type: data.sugar_type ?? null,
-      weight_kg: data.weight_kg ?? null,
-      measured_at: data.measured_at,
-      notes: data.notes || null,
-    })
-    .eq("id", id);
+  let payload = buildReadingPayload(data, false);
+  let { error } = await supabase.from("readings").update(payload).eq("id", id);
+
+  if (isMissingWeightKgColumn(error)) {
+    payload = buildReadingPayload(data, true);
+    ({ error } = await supabase.from("readings").update(payload).eq("id", id));
+  }
 
   if (error) {
     return {

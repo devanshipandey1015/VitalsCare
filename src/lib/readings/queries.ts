@@ -1,6 +1,15 @@
 import { subDays } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import type { DateFilter, Reading } from "@/lib/types/reading";
+import { weightFromRow } from "@/lib/readings/weight";
+
+function normalizeReading(row: Record<string, unknown>): Reading {
+  const reading = row as unknown as Reading & { weight_lbs?: number | null };
+  return {
+    ...reading,
+    weight_kg: weightFromRow(reading),
+  };
+}
 
 export async function getReadings(filter: DateFilter = "all"): Promise<Reading[]> {
   const supabase = await createClient();
@@ -22,7 +31,7 @@ export async function getReadings(filter: DateFilter = "all"): Promise<Reading[]
     throw new Error(error.message);
   }
 
-  return (data ?? []) as Reading[];
+  return (data ?? []).map((row) => normalizeReading(row as Record<string, unknown>));
 }
 
 export async function getReadingById(id: string): Promise<Reading | null> {
@@ -38,7 +47,7 @@ export async function getReadingById(id: string): Promise<Reading | null> {
     return null;
   }
 
-  return data as Reading;
+  return normalizeReading(data as Record<string, unknown>);
 }
 
 export function calculateAverages(readings: Reading[]) {
