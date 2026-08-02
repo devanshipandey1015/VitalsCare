@@ -9,5 +9,13 @@ export function formatAuthError(message: string): string {
     return "This email is already registered. Try signing in instead.";
   }
 
+  if (lower.includes("email not confirmed")) {
+    return "Please confirm your email first. Check your inbox for the confirmation link we sent when you signed up.";
+  }
+
+  if (lower.includes("invalid login credentials")) {
+    return "That email and password do not match an account. Check for typos, or create an account.";
+  }
+
   return message;
 }

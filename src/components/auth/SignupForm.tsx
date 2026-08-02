@@ -17,6 +17,7 @@ export function SignupForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,7 +36,7 @@ export function SignupForm() {
     setLoading(true);
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -49,8 +50,45 @@ export function SignupForm() {
       return;
     }
 
+    // With email confirmation enabled, signUp returns no session — the account
+    // is not usable until the emailed link is clicked. Redirecting to a
+    // protected route here would just bounce back to /login with no
+    // explanation, so show the "check your email" state instead.
+    if (!data.session) {
+      setConfirmationSent(true);
+      setLoading(false);
+      return;
+    }
+
     router.push("/dashboard");
     router.refresh();
+  }
+
+  if (confirmationSent) {
+    return (
+      <div className="space-y-6">
+        <div className="rounded-xl bg-teal-50 px-5 py-6 text-center">
+          <h2 className="text-2xl font-bold text-teal-900">
+            Check your email
+          </h2>
+          <p className="mt-3 text-lg text-teal-800">
+            We sent a confirmation link to{" "}
+            <span className="font-semibold break-words">{email}</span>. Click it
+            to activate your account, then sign in.
+          </p>
+          <p className="mt-3 text-base text-teal-700">
+            The link can take a few minutes to arrive. Remember to check your
+            spam folder.
+          </p>
+        </div>
+
+        <Link href="/login" className="block">
+          <Button type="button" fullWidth size="lg">
+            Go to Sign In
+          </Button>
+        </Link>
+      </div>
+    );
   }
 
   return (

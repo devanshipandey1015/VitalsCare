@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { formatAuthError } from "@/lib/auth/errors";
+import { getAuthCallbackUrl } from "@/lib/auth/site-url";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PasswordInput } from "@/components/ui/PasswordInput";
@@ -14,10 +16,31 @@ export function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [needsConfirmation, setNeedsConfirmation] = useState(false);
+  const [resendMessage, setResendMessage] = useState<string | null>(null);
+
+  async function handleResendConfirmation() {
+    setResendMessage(null);
+
+    const supabase = createClient();
+    const { error: resendError } = await supabase.auth.resend({
+      type: "signup",
+      email,
+      options: { emailRedirectTo: getAuthCallbackUrl() },
+    });
+
+    setResendMessage(
+      resendError
+        ? formatAuthError(resendError.message)
+        : "Confirmation email sent. Check your inbox and spam folder."
+    );
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setResendMessage(null);
+    setNeedsConfirmation(false);
     setLoading(true);
 
     const supabase = createClient();
@@ -27,7 +50,10 @@ export function LoginForm() {
     });
 
     if (authError) {
-      setError(authError.message);
+      setError(formatAuthError(authError.message));
+      setNeedsConfirmation(
+        authError.message.toLowerCase().includes("email not confirmed")
+      );
       setLoading(false);
       return;
     }
@@ -57,8 +83,24 @@ export function LoginForm() {
       />
 
       {error && (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-base font-medium text-red-700">
-          {error}
+        <div className="rounded-xl bg-red-50 px-4 py-3">
+          <p className="text-base font-medium text-red-700">{error}</p>
+
+          {needsConfirmation && (
+            <button
+              type="button"
+              onClick={handleResendConfirmation}
+              className="mt-2 text-base font-semibold text-red-800 underline"
+            >
+              Resend confirmation email
+            </button>
+          )}
+        </div>
+      )}
+
+      {resendMessage && (
+        <p className="rounded-xl bg-teal-50 px-4 py-3 text-base font-medium text-teal-800">
+          {resendMessage}
         </p>
       )}
 
